@@ -12,13 +12,19 @@ class InfoMessage:
     speed: float
     calories: float
 
+    MESSAGE_TRAINING_TYPE: ClassVar[str] = 'Тип тренировки:'
+    MESSAGE_DURATION: ClassVar[str] = ' Длительность:'
+    MESSAGE_DISTANCE: ClassVar[str] = ' Дистанция:'
+    MESSAGE_SPEED: ClassVar[str] = ' Ср. скорость:'
+    MESSAGE_CALORIES: ClassVar[str] = ' Потрачено ккал:'
+
     def get_message(self) -> str:
         """Возврат строки сообщения."""
-        return (f'Тип тренировки: {self.training_type};'
-                f' Длительность: {self.duration:.3f} ч.;'
-                f' Дистанция: {self.distance:.3f} км;'
-                f' Ср. скорость: {self.speed:.3f} км/ч;'
-                f' Потрачено ккал: {self.calories:.3f}.')
+        return (f'{self.MESSAGE_TRAINING_TYPE} {self.training_type};'
+                f'{self.MESSAGE_DURATION} {self.duration:.3f} ч.;'
+                f'{self.MESSAGE_DISTANCE} {self.distance:.3f} км;'
+                f'{self.MESSAGE_SPEED} {self.speed:.3f} км/ч;'
+                f'{self.MESSAGE_CALORIES} { self.calories:.3f}.')
 
 
 @dataclass
@@ -28,8 +34,10 @@ class Training:
     action: int
     duration: float
     weight: float
+
     M_IN_KM: ClassVar[float] = 1000
     LEN_STEP: ClassVar[float] = 0.65
+    MINUTES_IN_HOUR: ClassVar[float] = 60
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -41,7 +49,9 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError
+        raise NotImplementedError(
+                                  f'В классе {type(self).__name__} не'
+                                  'реализован метод  get_spent_calories')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -56,12 +66,8 @@ class Training:
 class Running(Training):
     """Тренировка: бег."""
 
-    action: int
-    duration: float
-    weight: float
     COEFF_CALORIE_1: ClassVar[float] = 18
     COEFF_CALORIE_2: ClassVar[float] = 20
-    MINUTES_IN_HOUR: ClassVar[float] = 60
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий при беге."""
@@ -76,7 +82,6 @@ class SportsWalking(Training):
 
     COEFF_CALORIE_1: float = 0.035
     COEFF_CALORIE_2: float = 0.029
-    MINUTES_IN_HOUR: float = 60
 
     def __init__(self,
                  action: int,
@@ -124,13 +129,22 @@ class Swimming(Training):
                 * self.weight)
 
 
+SWM_CODE: str = 'SWM'
+RUN_CODE: str = 'RUN'
+WLK_CODE: str = 'WLK'
+
+
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    parameters_list = {
-        'SWM': Swimming,
-        'RUN': Running,
-        'WLK': SportsWalking}
-    return parameters_list[workout_type](*data)
+    parameters_dict: dict = {
+        SWM_CODE: Swimming,
+        RUN_CODE: Running,
+        WLK_CODE: SportsWalking}
+    if parameters_dict:
+        return parameters_dict[workout_type](*data)
+    else:
+        raise ValueError(f'{workout_type} не'
+                         f'соответствует значениям в {parameters_dict}')
 
 
 def main(training: Training) -> None:
