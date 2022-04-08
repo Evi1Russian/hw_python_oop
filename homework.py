@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
+SWM_CODE: str = 'SWM'
+RUN_CODE: str = 'RUN'
+WLK_CODE: str = 'WLK'
+
 
 @dataclass
 class InfoMessage:
@@ -126,11 +130,6 @@ class Swimming(Training):
         return ((self.get_mean_speed()
                 + self.COEFF_CALORIE_1) * self.COEFF_CALORIE_2
                 * self.weight)
-
-
-SWM_CODE: str = 'SWM'
-RUN_CODE: str = 'RUN'
-WLK_CODE: str = 'WLK'
 
 
 def read_package(workout_type: str, data: list) -> Training:
