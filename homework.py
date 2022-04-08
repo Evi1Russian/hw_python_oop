@@ -80,20 +80,14 @@ class Running(Training):
                 * self.MINUTES_IN_HOUR)
 
 
+@dataclass
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
-    COEFF_CALORIE_1: float = 0.035
-    COEFF_CALORIE_2: float = 0.029
+    height: float
 
-    def __init__(self,
-                 action: int,
-                 duration: float,
-                 weight: float,
-                 height: float
-                 ) -> None:
-        super().__init__(action, duration, weight)
-        self.height = height
+    COEFF_CALORIE_1: ClassVar[float] = 0.035
+    COEFF_CALORIE_2: ClassVar[float] = 0.029
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий при ходьбе."""
@@ -140,9 +134,8 @@ def read_package(workout_type: str, data: list) -> Training:
         WLK_CODE: SportsWalking}
     if parameters_dict:
         return parameters_dict[workout_type](*data)
-    else:
-        raise ValueError(f'{workout_type} не'
-                         f'соответствует значениям в {parameters_dict}')
+    raise ValueError(f'{workout_type} не'
+                     f'соответствует значениям в {parameters_dict}')
 
 
 def main(training: Training) -> None:
